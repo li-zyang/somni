@@ -58,6 +58,13 @@ def main():
     required = True,
     type = argparse.FileType(encoding = 'utf-8'))
 
+  parser.add_argument(
+    '-a', '--update-all',
+    dest = 'update_all',
+    help = 'Update all files this time, overrideing the min_update setting',
+    action = 'store_true'
+  )
+
   args = parser.parse_args()
 
   config = json.load(args.config[0])
@@ -86,7 +93,9 @@ def main():
   for glob in config["select"]:
     for fp in Path(re.sub(r'[^/]+$', '', glob)).glob(re.search(r'[^/]+$', glob).group(0)):
       restore = config.get("restore", None)
-      if config.get("min_update", False) and restore and len(restore) and Path(restore).exists():
+      _0 = not args.update_all and config.get("min_update", False)
+      _1 = restore and len(restore) and Path(restore).exists()
+      if _0 and _1:
         if not re.search(r'\\|/$', restore):
           restore += '/'
         target = Path(restore + fp.name)
