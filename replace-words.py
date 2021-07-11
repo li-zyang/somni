@@ -97,7 +97,7 @@ def main():
         if nearbyparaend and nearbyparaend.start() <= pos and nearbyparaend.end() > pos:
           paraends.append((nearbyparaend.start(), nearbyparaend.group(0)))
           content = content[ : nearbyparaend.start()] + ' ' + content[nearbyparaend.end() : ]
-        else:
+        elif pos < len(content) - 1:
           _0 = ord(content[pos - 1]) < 256 and ord(content[pos + 1]) < 256
           _1 = not content[pos - 1].isspace() and not content[pos + 1].isspace()
           if _0 and _1:
@@ -106,6 +106,9 @@ def main():
           else:
             newlines.append((pos, False))
             content = content[ : pos] + content[pos + 1 : ]
+        else:
+          newlines.append((pos, False))
+          content = content[ : pos]
         pos = content.find('\n', pos)
       searchstart = 0
       while True:
@@ -127,9 +130,13 @@ def main():
             if newlines[i][0] < matched.start():
               continue
             pos = newlines[i][0] + len(key) - len(name)
+            if pos == len(content) - 1:
+              newlines[i] = (pos, False)
+              continue
             _0 = ord(content[pos - 1]) < 256 and ord(content[pos + 1]) < 256
             _1 = not content[pos - 1].isspace() and not content[pos + 1].isspace()
-            if _0 and _1:
+            _2 = content[pos].isspace()
+            if _0 and _1 and _2:
               newlines[i] = (pos, True)
             else:
               newlines[i] = (pos, False)
