@@ -62,8 +62,12 @@ def main():
 
   config = json.load(args.config[0])
   searchwords = []
-  for val in config["mappings"].values():
-    searchwords += val
+  for lst in config["mappings"].values():
+    for itm in lst:
+      try:
+        searchwords.index(itm)
+      except ValueError:
+        searchwords.append(itm)
   searchwords.sort(key = lambda itm : - len(itm))
   _search = ''
   for i, w in enumerate(searchwords):
